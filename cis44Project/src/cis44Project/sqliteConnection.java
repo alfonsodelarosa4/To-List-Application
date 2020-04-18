@@ -25,7 +25,7 @@ public class sqliteConnection {
 			Class.forName("org.sqlite.JDBC");
 			//download driver https://bitbucket.org/xerial/sqlite-jdbc/downloads/
 			//location of sqlite file database for project
-			Connection conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Alfonso\\eclipse-workspace-java\\databases\\EmployeeData.sqlite");
+			Connection conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Alfonso\\git\\cis44Project\\cis44Project\\database files\\CIS44ProjectData.sqlite");
 			JOptionPane.showMessageDialog(null, "Connection Successful");
 			return conn;
 		} catch(Exception e)

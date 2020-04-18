@@ -1,6 +1,7 @@
 package cis44Project;
 
 import java.awt.EventQueue;
+import java.sql.Connection;
 
 import javax.swing.JFrame;
 
@@ -23,12 +24,15 @@ public class Frame1 {
 			}
 		});
 	}
-
+	Connection connection = null;
+	
+	
 	/**
 	 * Create the application.
 	 */
 	public Frame1() {
 		initialize();
+		connection = sqliteConnection.dbConnector();
 	}
 
 	/**
