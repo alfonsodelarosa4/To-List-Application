@@ -1,0 +1,37 @@
+
+import java.sql.*; // * means adds all classes of java.sql
+import javax.swing.*;
+// if other frames are going to use the database, copy import lines from above
+/*
+ * Download latest jar file (sqlite-jdbc-3.30.1.jar) from https://bitbucket.org/xerial/sqlite-jdbc/downloads/
+ * (not the repository) (pick the latest one 3.30.1 or greater)
+ * Then add those jar files into a folder called Resources in workspace (you make this folder)
+ * Then drag and drop the folder into the Project folder (link files)
+ * Then Right click the JRE System Library folder of project -> Build Path -> Configure Build Path
+ * Click on Modulepath and click the Add Jar file
+ * Then click on the added jar files in the Project folder
+ * 
+ * 
+ * 
+ */
+
+public class sqliteConnection {
+	
+	Connection conn = null;
+	
+	public static Connection dbConnector()
+	{
+		try {
+			Class.forName("org.sqlite.JDBC");
+			//download driver https://bitbucket.org/xerial/sqlite-jdbc/downloads/
+			//location of sqlite file database for project
+			Connection conn = DriverManager.getConnection("jdbc:sqlite:C:\\Users\\Alfonso\\eclipse-workspace-java\\databases\\EmployeeData.sqlite");
+			JOptionPane.showMessageDialog(null, "Connection Successful");
+			return conn;
+		} catch(Exception e)
+		{
+			JOptionPane.showMessageDialog(null, e);
+			return null;
+		}
+	}
+}
