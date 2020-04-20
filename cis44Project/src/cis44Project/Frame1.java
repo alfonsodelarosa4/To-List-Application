@@ -46,6 +46,11 @@ public class Frame1 {
 		initialize();
 		connection = sqliteConnection.dbConnector();
 	}
+	
+	public static void updateTable()
+	{
+		
+	}
 
 	/**
 	 * Initialize the contents of the frame.
@@ -114,11 +119,11 @@ public class Frame1 {
 		textFieldDueDate.setColumns(10);
 		
 		JButton btnAddTask = new JButton("Add Task");
-		btnAddTask.setBounds(10, 417, 85, 21);
+		btnAddTask.setBounds(10, 405, 85, 21);
 		frame.getContentPane().add(btnAddTask);
 		
 		JButton btnRemoveTask = new JButton("Remove Task");
-		btnRemoveTask.setBounds(136, 417, 119, 21);
+		btnRemoveTask.setBounds(10, 436, 119, 21);
 		frame.getContentPane().add(btnRemoveTask);
 	}
 }
