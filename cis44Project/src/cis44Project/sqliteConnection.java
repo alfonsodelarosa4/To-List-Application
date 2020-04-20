@@ -13,7 +13,6 @@ import javax.swing.*;
  * Then click on the added jar files in the Project folder
  * 
  * 
- * 
  */
 
 public class sqliteConnection {

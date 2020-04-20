@@ -8,7 +8,6 @@ package cis44Project;
  * method that outputs an entry given index parameter
  */
 
-
 public final class ArrayBag<T> implements BagInterface<T>
 {
 	private final T[] bag; 

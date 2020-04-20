@@ -1,5 +1,6 @@
 package cis44Project;
 
+
 public interface BagInterface<T>
 {
 	/** Gets the current number of entries in this bag.

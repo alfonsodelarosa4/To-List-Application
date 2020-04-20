@@ -10,8 +10,7 @@ public class Task {
 	 * 
 	 * default constructors:
 	 * 
-	 * 
-	 * 
+	 *
 	 * setters and getters:
 	 * 
 	 * 
