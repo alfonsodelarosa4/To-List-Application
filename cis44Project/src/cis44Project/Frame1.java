@@ -121,10 +121,12 @@ public class Frame1 {
 	{
 		
 		//delete contents of table
+		String query;
+		PreparedStatement pst;
 		try {
-			String query = "delete from Frame1";
+			query = "delete from CIS44ProjectData";
 			
-			PreparedStatement pst = connection.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			
 			pst.execute();
 						
@@ -138,12 +140,12 @@ public class Frame1 {
 		
 		//add elements from bag array to table
 		try {
-			String query = "insert into Frame1 (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
+			query = "insert into CIS44ProjectData (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
 			
-			PreparedStatement pst = connection.prepareStatement(query);
+			pst = connection.prepareStatement(query);
 			for(int i = 0; i < taskList.getCurrentSize(); i++)
 			{
-				query = "insert into Frame1 (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
+				query = "insert into CIS44ProjectData (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
 				
 				pst = connection.prepareStatement(query);
 				
@@ -184,6 +186,10 @@ public class Frame1 {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
+		//need this to connect to database
+		connection = sqliteConnection.dbConnector();
+		
+		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1127, 717);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
