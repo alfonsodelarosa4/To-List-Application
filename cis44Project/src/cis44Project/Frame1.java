@@ -19,6 +19,8 @@ import java.awt.event.ActionEvent;
 
 public class Frame1 {
 
+	//create bag array class here
+	public BagInterface<Task> taskList;
 	
 	private JFrame frame;
 	
@@ -63,6 +65,39 @@ public class Frame1 {
 		updateTable();
 	}
 	
+	public String toMonth (int month)
+	{
+		switch(month)
+		{
+		case 1:
+			return "January";
+		case 2: 
+			return "February";
+		case 3:
+			return "March";
+		case 4:
+			return "April";
+		case 5:
+			return "May";
+		case 6:
+			return "June";
+		case 7:
+			return "July";
+		case 8:
+			return "August";
+		case 9:
+			return "September";
+		case 10:
+			return "October";
+		case 11:
+			return "November";
+		case 12:
+			return "December";		
+		
+		}
+		return "";
+	}
+	
 	public void sortArray()
 	{
 		switch((String) comboBoxSort.getSelectedItem())
@@ -84,10 +119,10 @@ public class Frame1 {
 	
 	public void updateTable()
 	{
-		/*
+		
 		//delete contents of table
 		try {
-			String query = "delete * from Frame1";
+			String query = "delete from Frame1";
 			
 			PreparedStatement pst = connection.prepareStatement(query);
 			
@@ -100,9 +135,41 @@ public class Frame1 {
 			ex.printStackTrace();
 		}
 		
-		//add elements from bag array to table
 		
-		*/
+		//add elements from bag array to table
+		try {
+			String query = "insert into Frame1 (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
+			
+			PreparedStatement pst = connection.prepareStatement(query);
+			for(int i = 0; i < taskList.getCurrentSize(); i++)
+			{
+				query = "insert into Frame1 (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
+				
+				pst = connection.prepareStatement(query);
+				
+				Task current = taskList.retrieve(i);
+				
+				pst.setString(1, Integer.toString(i) );
+				pst.setString(2, current.getName() );
+				pst.setString(3, Integer.toString(current.getImportance()) );
+				pst.setString(4, current.getCategory() );
+				pst.setString(5, toMonth(current.getDueDateMonth() ));
+				pst.setString(6, Integer.toString(current.getDueDateDay()) );
+				pst.setString(7, Integer.toString(current.getDueDateYear()) );
+			
+				pst.execute();
+			}
+			
+			JOptionPane.showMessageDialog(null, "Data Saved");
+			
+			
+			pst.close();
+			
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	
 	}
 	
 	public void fillComboBox()
@@ -181,12 +248,20 @@ public class Frame1 {
 		JButton btnAddTask = new JButton("Add Task");
 		btnAddTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				//add element with a default constructor
-				//textFieldName.getText()
-				//textFieldImportance.getText()
-				//textFieldCategory.getText()
-				//textFieldDueDate.getText()
 				
+				String name = textFieldName.getText();
+				int importance = Integer.parseInt(textFieldImportance.getText());
+				String category = textFieldCategory.getText();
+				int month = Integer.parseInt(textFieldDueDateMonth.getText());
+				int day = Integer.parseInt(textFieldDueDateDay.getText());
+				int year = Integer.parseInt(textFieldDueDateYear.getText());
+				
+				Task newTask = new Task();
+				
+				//add element with a default constructor
+				taskList.add(newTask);
+				
+
 				refresh();
 				
 			}
@@ -196,11 +271,20 @@ public class Frame1 {
 		frame.getContentPane().add(btnAddTask);
 		
 		JButton btnRemoveTask = new JButton("Remove Task");
+		btnRemoveTask.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
 		btnRemoveTask.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		btnRemoveTask.setBounds(10, 628, 153, 21);
 		frame.getContentPane().add(btnRemoveTask);
 		
 		JButton btnUpdateTask = new JButton("Update Task");
+		btnUpdateTask.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		btnUpdateTask.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		btnUpdateTask.setBounds(10, 597, 153, 21);
 		frame.getContentPane().add(btnUpdateTask);
@@ -253,5 +337,6 @@ public class Frame1 {
 		frame.getContentPane().add(textFieldDueDateYear);
 		
 		fillComboBox();
+		taskList = new ArrayBag<>();
 	}
 }

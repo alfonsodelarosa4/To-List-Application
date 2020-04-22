@@ -1,11 +1,15 @@
 package cis44Project;
 
 /*
+ * METHODS TO ADD:
  * need sort algorithms:
  * radix sort for due date and importance
  * merge sort for name and category
  * 
  * method that outputs an entry given index parameter
+ * public T retrieve (int index)
+ * it's at the bottom of code
+ * 
  */
 
 public final class ArrayBag<T> implements BagInterface<T>
@@ -213,7 +217,15 @@ public final class ArrayBag<T> implements BagInterface<T>
 		System.out.println();
 	}
 	
-	
+	public T retrieve(int index)
+	{
+		if(index < 0)
+			return bag[0];
+		if(index > this.getCurrentSize())
+			return bag[(this.getCurrentSize() - 1)];
+		
+		return bag[index];
+	}
 	
 	
 	

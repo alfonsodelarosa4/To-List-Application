@@ -3,6 +3,12 @@ package cis44Project;
 
 public interface BagInterface<T>
 {
+	/*
+	 * 
+	 */
+	public T retrieve (int index);
+	
+	
 	/** Gets the current number of entries in this bag.
 		 @return  The integer number of entries currently in the bag. */
 	public int getCurrentSize();
