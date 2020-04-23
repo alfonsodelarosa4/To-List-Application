@@ -56,7 +56,6 @@ public class Frame1 {
 	 */
 	public Frame1() {
 		initialize();
-		connection = sqliteConnection.dbConnector();
 	}
 	
 	public void refresh()
@@ -124,7 +123,7 @@ public class Frame1 {
 		String query;
 		PreparedStatement pst;
 		try {
-			query = "delete from CIS44ProjectData";
+			query = "delete from TaskTable";
 			
 			pst = connection.prepareStatement(query);
 			
@@ -140,12 +139,12 @@ public class Frame1 {
 		
 		//add elements from bag array to table
 		try {
-			query = "insert into CIS44ProjectData (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
+			query = "insert into TaskTable (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
 			
 			pst = connection.prepareStatement(query);
 			for(int i = 0; i < taskList.getCurrentSize(); i++)
 			{
-				query = "insert into CIS44ProjectData (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
+				query = "insert into TaskTable (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
 				
 				pst = connection.prepareStatement(query);
 				
@@ -187,7 +186,7 @@ public class Frame1 {
 	 */
 	private void initialize() {
 		//need this to connect to database
-		connection = sqliteConnection.dbConnector();
+		connection = sqliteConnection.dbConnector("ALF");
 		
 		
 		frame = new JFrame();
