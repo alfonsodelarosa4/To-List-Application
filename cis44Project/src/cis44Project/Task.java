@@ -14,6 +14,7 @@ public class Task {
 	 * setters and getters: getMonth() setName(String name)
 	 * 
 	 * 
+	 * 
 	 */
 	
 	public String getName()
