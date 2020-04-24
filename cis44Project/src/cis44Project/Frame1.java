@@ -3,6 +3,7 @@ package cis44Project;
 import java.awt.EventQueue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,6 +17,8 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Frame1 {
 
@@ -25,6 +28,9 @@ public class Frame1 {
 	private JFrame frame;
 	
 	private JComboBox<String> comboBoxSort;
+	private JComboBox<String> comboBoxDatabase;
+	
+	private int selectedIndex;
 
 	/**
 	 * Launch the application.
@@ -58,13 +64,18 @@ public class Frame1 {
 		initialize();
 	}
 	
+	/*
+	 * 
+	 * sorts array
+	 * empties and refills table
+	 */
 	public void refresh()
 	{
-		sortArray();
-		updateTable();
+		sortList();
+		refillTable();
 	}
 	
-	public String toMonth (int month)
+	public String toMonthString (int month)
 	{
 		switch(month)
 		{
@@ -92,12 +103,44 @@ public class Frame1 {
 			return "November";
 		case 12:
 			return "December";		
-		
 		}
-		return "";
+		return "January";
 	}
 	
-	public void sortArray()
+	public int toMonthInt (String month)
+	{
+		switch(month)
+		{
+		case "January":
+			return 1;
+		case "February": 
+			return 2;
+		case "March":
+			return 3;
+		case "April":
+			return 4;
+		case "May":
+			return 5;
+		case "June":
+			return 6;
+		case "July":
+			return 7;
+		case "August":
+			return 8;
+		case "September":
+			return 9;
+		case "October":
+			return 10;
+		case "November":
+			return 11;
+		case "December":
+			return 12;		
+		}
+		return 1;
+	}
+	
+	//FIX: when sorting algorithms are created
+	public void sortList()
 	{
 		switch((String) comboBoxSort.getSelectedItem())
 		{
@@ -113,12 +156,80 @@ public class Frame1 {
 		case "Sort by Importance":
 			//sort importance algorithm
 			break;
+		default : //sort by Name
+			
+			break;
 		}
 	}
 	
-	public void updateTable()
+	//FIX: when Task class is created
+	public void addTask(String name, int importance, String catergory, String month, int day, int year)
 	{
 		
+		
+		Task newTask = new Task();
+		
+		//add element with a default constructor
+		taskList.add(newTask);
+	}
+	
+	public void removeSelectedTask()
+	{
+		if(selectedIndex == -1)
+		{
+		
+		JOptionPane.showMessageDialog(null, "No index was selected");
+		}
+		else
+		{
+			taskList.removeEntry(selectedIndex);
+		}
+	}
+	
+	
+	//TEST: when Task class is created
+	public void refillList()
+	{
+		try {
+			//count number of entries from table
+			int tableEntries = 0;
+			
+			String query = "SELECT COUNT(*) FROM TaskTable";
+			PreparedStatement pst = connection.prepareStatement(query);
+					
+			ResultSet rs = pst.executeQuery(query);
+            while (rs.next()){
+                tableEntries = rs.getInt(1);
+            }
+            
+            
+			for(int i = 0; i < tableEntries; i++)
+			{
+				query = "select * from TaskTable where Index='"+ Integer.toString(i) +"'";
+			
+				pst = connection.prepareStatement(query);
+			
+				rs = pst.executeQuery();
+			
+				while(rs.next())
+				{
+					//addTask(String name, int importance, String catergory, int month, int day, int year)
+					addTask(rs.getString("Name"),Integer.parseInt(rs.getString("Importance")),rs.getString("Category"),rs.getString("Due Date: Month"),Integer.parseInt(rs.getString("Due Date: Day")),Integer.parseInt(rs.getString("Due Date: Year")));
+				}
+			
+								
+			}
+			pst.close();
+			
+		} catch (Exception ex)
+		{
+			ex.printStackTrace();
+		}
+	}
+	
+	//FIX: Something wrong
+	public void refillTable()
+	{
 		//delete contents of table
 		String query;
 		PreparedStatement pst;
@@ -141,6 +252,7 @@ public class Frame1 {
 		try {
 			query = "insert into TaskTable (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
 			
+			//FIX!!!!!!!!!!!!!!!!!!!!!!
 			pst = connection.prepareStatement(query);
 			for(int i = 0; i < taskList.getCurrentSize(); i++)
 			{
@@ -154,14 +266,14 @@ public class Frame1 {
 				pst.setString(2, current.getName() );
 				pst.setString(3, Integer.toString(current.getImportance()) );
 				pst.setString(4, current.getCategory() );
-				pst.setString(5, toMonth(current.getDueDateMonth() ));
+				pst.setString(5, toMonthString(current.getDueDateMonth() ));
 				pst.setString(6, Integer.toString(current.getDueDateDay()) );
 				pst.setString(7, Integer.toString(current.getDueDateYear()) );
 			
 				pst.execute();
 			}
 			
-			JOptionPane.showMessageDialog(null, "Data Saved");
+			//JOptionPane.showMessageDialog(null, "Data Saved");
 			
 			
 			pst.close();
@@ -173,12 +285,20 @@ public class Frame1 {
 	
 	}
 	
-	public void fillComboBox()
+	//FIX: Something wrong?
+	public void fillComboBoxSort()
 	{
 		comboBoxSort.addItem("Sort by Name");
 		comboBoxSort.addItem("Sort by Due Date");
 		comboBoxSort.addItem("Sort by Category");
 		comboBoxSort.addItem("Sort by Importance");
+	}
+	
+	//FIX: something wrong?
+	public void fillComboBoxDatabase()
+	{
+		comboBoxDatabase.addItem("ALFONSO'S");
+		comboBoxDatabase.addItem("ALI'S");
 	}
 
 	/**
@@ -186,7 +306,7 @@ public class Frame1 {
 	 */
 	private void initialize() {
 		//need this to connect to database
-		connection = sqliteConnection.dbConnector("ALF");
+		//connection = sqliteConnection.dbConnector("ALFONSO'S");
 		
 		
 		frame = new JFrame();
@@ -200,6 +320,29 @@ public class Frame1 {
 		frame.getContentPane().add(lblTitle);
 		
 		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				try {
+					selectedIndex = table.getSelectedRow();
+					
+					Task current = taskList.retrieve(selectedIndex);
+					
+					
+					textFieldName.setText(current.getName());
+					textFieldImportance.setText(Integer.toString(current.getImportance()));
+					textFieldCategory.setText(current.getCategory());
+					textFieldDueDateMonth.setText(toMonthString(current.getDueDateMonth()));
+					textFieldDueDateDay.setText(Integer.toString(current.getDueDateDay()));
+					textFieldDueDateYear.setText(Integer.toString(current.getDueDateYear()));
+					
+					
+				} catch (Exception ex)
+				{
+					ex.printStackTrace();
+				}
+			}
+		});
 		scrollPane.setBounds(257, 125, 700, 524);
 		frame.getContentPane().add(scrollPane);
 		
@@ -257,16 +400,12 @@ public class Frame1 {
 				String name = textFieldName.getText();
 				int importance = Integer.parseInt(textFieldImportance.getText());
 				String category = textFieldCategory.getText();
-				int month = Integer.parseInt(textFieldDueDateMonth.getText());
+				String month = toMonthString(toMonthInt(textFieldDueDateMonth.getText()));
 				int day = Integer.parseInt(textFieldDueDateDay.getText());
 				int year = Integer.parseInt(textFieldDueDateYear.getText());
 				
-				Task newTask = new Task();
+				addTask(name, importance, category, month, day, year);
 				
-				//add element with a default constructor
-				taskList.add(newTask);
-				
-
 				refresh();
 				
 			}
@@ -278,7 +417,18 @@ public class Frame1 {
 		JButton btnRemoveTask = new JButton("Remove Task");
 		btnRemoveTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//remove task
+				removeSelectedTask();
+				refresh();
 				
+				//change text fields
+		
+				textFieldName.setText("");
+				textFieldImportance.setText("");
+				textFieldCategory.setText("");
+				textFieldDueDateMonth.setText("");
+				textFieldDueDateDay.setText("");
+				textFieldDueDateYear.setText("");
 			}
 		});
 		btnRemoveTask.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -288,6 +438,20 @@ public class Frame1 {
 		JButton btnUpdateTask = new JButton("Update Task");
 		btnUpdateTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				//remove selected task
+				removeSelectedTask();
+				refresh();
+				
+				//add new task
+				String name = textFieldName.getText();
+				int importance = Integer.parseInt(textFieldImportance.getText());
+				String category = textFieldCategory.getText();
+				String month = toMonthString(toMonthInt(textFieldDueDateMonth.getText()));
+				int day = Integer.parseInt(textFieldDueDateDay.getText());
+				int year = Integer.parseInt(textFieldDueDateYear.getText());
+				
+				addTask(name, importance, category, month, day, year);
+				refresh();
 			}
 		});
 		btnUpdateTask.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -312,6 +476,7 @@ public class Frame1 {
 		comboBoxSort = new JComboBox<String>();
 		comboBoxSort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				
 				refresh();
 			}
 		});
@@ -341,7 +506,32 @@ public class Frame1 {
 		textFieldDueDateYear.setBounds(10, 467, 215, 30);
 		frame.getContentPane().add(textFieldDueDateYear);
 		
-		fillComboBox();
+		JLabel lblSort = new JLabel("Sort");
+		lblSort.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblSort.setBounds(434, 65, 119, 26);
+		frame.getContentPane().add(lblSort);
+		
+		comboBoxDatabase = new JComboBox<String>();
+		comboBoxDatabase.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				connection = sqliteConnection.dbConnector((String) comboBoxDatabase.getSelectedItem());
+				refillList();
+				
+				refresh();
+			}
+		});
+		comboBoxDatabase.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		comboBoxDatabase.setBounds(773, 93, 184, 26);
+		frame.getContentPane().add(comboBoxDatabase);
+		
+		JLabel lblDatabase = new JLabel("Database");
+		lblDatabase.setFont(new Font("Tahoma", Font.PLAIN, 18));
+		lblDatabase.setBounds(773, 65, 119, 26);
+		frame.getContentPane().add(lblDatabase);
+		
+		fillComboBoxSort();
+		fillComboBoxDatabase();
 		taskList = new ArrayBag<>();
+		selectedIndex = -1;
 	}
 }

@@ -45,5 +45,10 @@ public interface BagInterface<T>
 		 @return  True if the bag contains anEntry, or false if not. */
 	public boolean contains(T anEntry);
 	public void display();
+	
+	/** Removes an entry given the index
+	 @param givenIndex to locate
+	 @return  Entry of array */
+	public T removeEntry(int givenIndex);
 }
    

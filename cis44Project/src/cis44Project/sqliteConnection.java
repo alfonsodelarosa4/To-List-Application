@@ -23,17 +23,20 @@ public class sqliteConnection {
 	{
 		
 		try {
-			String database_location = " ";
+			String database_location = "C:\\Users\\Alfonso\\git\\cis44Project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
 			
+			/*
 			switch(PC)
 			{
-			case "ALF":
+			case "ALFONSO'S":
 				database_location = "C:\\Users\\Alfonso\\git\\cis44Project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
 				break;
-			case "ALI":
-				database_location = " ";
+			case "ALI'S":
+				database_location = "C:\\Users\\Ali Altimimi\\git\\cis44project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
 				break;
 			}
+			*/
+			
 			
 			Class.forName("org.sqlite.JDBC");
 			//download driver https://bitbucket.org/xerial/sqlite-jdbc/downloads/
