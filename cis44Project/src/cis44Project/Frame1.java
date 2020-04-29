@@ -210,11 +210,12 @@ public class Frame1 {
 				pst = connection.prepareStatement(query);
 			
 				rs = pst.executeQuery();
-			
+				
+				// FIX MONTH PART
 				while(rs.next())
 				{
 					//addTask(String name, int importance, String catergory, int month, int day, int year)
-					addTask(rs.getString("Name"),Integer.parseInt(rs.getString("Importance")),rs.getString("Category"),rs.getString("Due Date: Month"),Integer.parseInt(rs.getString("Due Date: Day")),Integer.parseInt(rs.getString("Due Date: Year")));
+					addTask(rs.getString("Name"),Integer.parseInt(rs.getString("Importance")),rs.getString("Category"),toMonthInt(rs.getString("Due Date: Month")),Integer.parseInt(rs.getString("Due Date: Day")),Integer.parseInt(rs.getString("Due Date: Year")));
 				}
 			
 								
@@ -520,6 +521,7 @@ public class Frame1 {
 				refresh();
 			}
 		});
+		
 		comboBoxDatabase.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		comboBoxDatabase.setBounds(773, 93, 184, 26);
 		frame.getContentPane().add(comboBoxDatabase);
