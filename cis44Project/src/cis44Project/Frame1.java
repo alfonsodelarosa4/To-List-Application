@@ -375,6 +375,7 @@ public class Frame1 {
 					
 					selectedIndex = table.getSelectedRow();
 					System.out.println("Row selected = " + selectedIndex);
+					
 					Task current = taskList.retrieve(selectedIndex-1);
 					
 					textFieldName.setText(current.getName());
