@@ -1,5 +1,7 @@
 package cis44Project;
 
+import java.util.Arrays;
+
 /*
  * METHODS TO ADD:
  * need sort algorithms:
@@ -58,11 +60,13 @@ public final class ArrayBag<T> implements BagInterface<T>
       if (isArrayFull())
       {
          result = false;
+         
       }
       else
       {  // Assertion: result is true here
          bag[numberOfEntries] = newEntry;
          numberOfEntries++;
+         
       } // end if
       
       return result;
@@ -219,12 +223,32 @@ public final class ArrayBag<T> implements BagInterface<T>
 	
 	public T retrieve(int index)
 	{
+		if(this.isEmpty())
+		{
+			return null;
+		} else
+		{
+	
 		if(index < 0)
 			return bag[0];
 		if(index > this.getCurrentSize())
 			return bag[(this.getCurrentSize() - 1)];
 		
 		return bag[index];
+		}
+	}
+	
+	public String toString()
+	{
+		String str = "[";
+		for(int i = 0; i < this.getCurrentSize(); i++)
+		{
+			if(i != 0)
+				str += ", ";
+			str += bag[i];
+		}
+		str += "]";
+		return str;
 	}
 	
 	

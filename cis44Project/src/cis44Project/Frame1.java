@@ -13,6 +13,9 @@ import java.awt.Font;
 import javax.swing.JTable;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+
+import net.proteanit.sql.DbUtils;
+
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import java.awt.event.ActionListener;
@@ -64,15 +67,11 @@ public class Frame1 {
 		initialize();
 	}
 	
-	/*
-	 * 
-	 * sorts array
-	 * empties and refills table
-	 */
 	public void refresh()
 	{
-		sortList();
+		//sortList();
 		refillTable();
+		System.out.println("Contents of TaskList after refresh(): " + taskList);
 	}
 	
 	public String toMonthString (int month)
@@ -162,12 +161,39 @@ public class Frame1 {
 		}
 	}
 	
-	//FIX: when Task class is created
-	public void addTask(String name, int importance, String catergory, String month, int day, int year)
+	public void refreshTable()
 	{
-		
-		
-		Task newTask = new Task();
+		try {
+			//replacing * with 'columnName1' or even 'columnName2,columnName3'
+			//* selects all of the columns
+			String query = "select * from TaskTable";
+			
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			//download rs2xml jar file from https://sourceforge.net/projects/finalangelsanddemons/
+			//add to Resources folder in workspace
+			//follow same steps when adding online jar file in sqlite connection java
+			//then drag the rs2 file into the classpath
+			
+			//get table name
+			
+			// if DbUtils looks red hover over DbUtils click import DbUtils (net.proteanit.sql)
+			// import net.proteanit.sql.DbUtils;
+			table.setModel(DbUtils.resultSetToTableModel(rs));
+			
+			rs.close();
+			pst.close();
+			
+		} catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
+	public void addTask(String name, int importance, String category, int month, int day, int year)
+	{
+				
+		Task newTask = new Task(name,importance, category, month, day, year);
 		
 		//add element with a default constructor
 		taskList.add(newTask);
@@ -190,51 +216,54 @@ public class Frame1 {
 	//TEST: when Task class is created
 	public void refillList()
 	{
+		System.out.println("Contents of TaskList before refillList(): " + taskList);
 		try {
 			//count number of entries from table
-			int tableEntries = 0;
+			/*
+			 
 			
 			String query = "SELECT COUNT(*) FROM TaskTable";
 			PreparedStatement pst = connection.prepareStatement(query);
 					
-			ResultSet rs = pst.executeQuery(query);
+			ResultSet rs = pst.executeQuery();
+			
             while (rs.next()){
                 tableEntries = rs.getInt(1);
             }
+            */
             
-            
-			for(int i = 0; i < tableEntries; i++)
+			String query = "select * from TaskTable";
+			PreparedStatement pst = connection.prepareStatement(query);
+			
+			ResultSet rs = pst.executeQuery();
+			
+			while(rs.next())
 			{
-				query = "select * from TaskTable where Index='"+ Integer.toString(i) +"'";
-			
-				pst = connection.prepareStatement(query);
-			
-				rs = pst.executeQuery();
-				
-				// FIX MONTH PART
-				while(rs.next())
-				{
 					//addTask(String name, int importance, String catergory, int month, int day, int year)
-					addTask(rs.getString("Name"),Integer.parseInt(rs.getString("Importance")),rs.getString("Category"),toMonthInt(rs.getString("Due Date: Month")),Integer.parseInt(rs.getString("Due Date: Day")),Integer.parseInt(rs.getString("Due Date: Year")));
-				}
-			
-								
+				addTask(rs.getString("Name"),Integer.parseInt(rs.getString("Importance")),rs.getString("Category"),toMonthInt(rs.getString("MonthDue")),Integer.parseInt(rs.getString("DayDue")),Integer.parseInt(rs.getString("YearDue")));
 			}
+			
 			pst.close();
 			
-		} catch (Exception ex)
+		} catch (Exception ea)
 		{
-			ex.printStackTrace();
+			ea.printStackTrace();
 		}
+		
+		System.out.println("Contents of TaskList after refillList(): " + taskList);
+		refreshTable();
 	}
 	
 	//FIX: Something wrong
 	public void refillTable()
 	{
 		//delete contents of table
-		String query;
-		PreparedStatement pst;
+		
+		
+
 		try {
+			String query;
+			PreparedStatement pst;
 			query = "delete from TaskTable";
 			
 			pst = connection.prepareStatement(query);
@@ -243,47 +272,61 @@ public class Frame1 {
 						
 			pst.close();
 			
-		} catch (Exception ex)
+		} catch (Exception eb)
 		{
-			ex.printStackTrace();
+			eb.printStackTrace();
 		}
 		
+
+		//add elements from bag array to database
 		
-		//add elements from bag array to table
-		try {
-			query = "insert into TaskTable (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
-			
-			//FIX!!!!!!!!!!!!!!!!!!!!!!
-			pst = connection.prepareStatement(query);
-			for(int i = 0; i < taskList.getCurrentSize(); i++)
+		if(!taskList.isEmpty())
+		{
+			for(int i = 1; i <= taskList.getCurrentSize(); i++)
 			{
-				query = "insert into TaskTable (Index,Name,Importance,Category,Due Date: Month, Due Date: Day, Due Date: Year) values (?,?,?,?,?,?,?)";
 				
-				pst = connection.prepareStatement(query);
 				
-				Task current = taskList.retrieve(i);
+				try {
+					String query = "insert into TaskTable (Name, Importance, Category, MonthDue, DayDue, YearDue) values (?, ?, ?, ?, ?, ?)";
 				
-				pst.setString(1, Integer.toString(i) );
-				pst.setString(2, current.getName() );
-				pst.setString(3, Integer.toString(current.getImportance()) );
-				pst.setString(4, current.getCategory() );
-				pst.setString(5, toMonthString(current.getDueDateMonth() ));
-				pst.setString(6, Integer.toString(current.getDueDateDay()) );
-				pst.setString(7, Integer.toString(current.getDueDateYear()) );
+				PreparedStatement pst = connection.prepareStatement(query);
+				
+				Task current = taskList.retrieve(i-1);
+				
+				pst.setString(1, current.getName() );
+				pst.setInt(2, current.getImportance() );
+				pst.setString(3, current.getCategory() );
+				pst.setString(4, toMonthString(current.getDueDateMonth() ));
+				pst.setInt(5, current.getDueDateDay() );
+				pst.setInt(6, current.getDueDateYear() );
 			
 				pst.execute();
+				pst.close();
+				} catch (Exception ec)
+				{	
+					ec.printStackTrace();
+				}
 			}
+		}
+		
+		//connect database to table
+		try {
+			String query = "select * from TaskTable";
 			
-			//JOptionPane.showMessageDialog(null, "Data Saved");
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
 			
+			table.setModel(DbUtils.resultSetToTableModel(rs));
 			
+			rs.close();
 			pst.close();
 			
-		} catch (Exception e)
+		} catch (Exception ef)
 		{
-			e.printStackTrace();
+			ef.printStackTrace();
 		}
-	
+		
+		refreshTable();
 	}
 	
 	//FIX: Something wrong?
@@ -307,8 +350,7 @@ public class Frame1 {
 	 */
 	private void initialize() {
 		//need this to connect to database
-		//connection = sqliteConnection.dbConnector("ALFONSO'S");
-		
+		connection = sqliteConnection.dbConnector("ALFONSO'S");
 		
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1127, 717);
@@ -321,14 +363,19 @@ public class Frame1 {
 		frame.getContentPane().add(lblTitle);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.addMouseListener(new MouseAdapter() {
+		scrollPane.setBounds(260, 133, 715, 516);
+		frame.getContentPane().add(scrollPane);
+		
+		table = new JTable();
+		scrollPane.setViewportView(table);
+		table.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
 				try {
+					
 					selectedIndex = table.getSelectedRow();
-					
-					Task current = taskList.retrieve(selectedIndex);
-					
+					System.out.println("Row selected = " + selectedIndex);
+					Task current = taskList.retrieve(selectedIndex-1);
 					
 					textFieldName.setText(current.getName());
 					textFieldImportance.setText(Integer.toString(current.getImportance()));
@@ -337,18 +384,12 @@ public class Frame1 {
 					textFieldDueDateDay.setText(Integer.toString(current.getDueDateDay()));
 					textFieldDueDateYear.setText(Integer.toString(current.getDueDateYear()));
 					
-					
 				} catch (Exception ex)
 				{
 					ex.printStackTrace();
 				}
 			}
 		});
-		scrollPane.setBounds(257, 125, 700, 524);
-		frame.getContentPane().add(scrollPane);
-		
-		table = new JTable();
-		scrollPane.setViewportView(table);
 		
 		JLabel lblName = new JLabel("Name");
 		lblName.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -401,7 +442,7 @@ public class Frame1 {
 				String name = textFieldName.getText();
 				int importance = Integer.parseInt(textFieldImportance.getText());
 				String category = textFieldCategory.getText();
-				String month = toMonthString(toMonthInt(textFieldDueDateMonth.getText()));
+				int month = toMonthInt(textFieldDueDateMonth.getText());
 				int day = Integer.parseInt(textFieldDueDateDay.getText());
 				int year = Integer.parseInt(textFieldDueDateYear.getText());
 				
@@ -447,7 +488,7 @@ public class Frame1 {
 				String name = textFieldName.getText();
 				int importance = Integer.parseInt(textFieldImportance.getText());
 				String category = textFieldCategory.getText();
-				String month = toMonthString(toMonthInt(textFieldDueDateMonth.getText()));
+				int month = toMonthInt(textFieldDueDateMonth.getText());
 				int day = Integer.parseInt(textFieldDueDateDay.getText());
 				int year = Integer.parseInt(textFieldDueDateYear.getText());
 				
@@ -475,10 +516,12 @@ public class Frame1 {
 		frame.getContentPane().add(lblTaskTable);
 		
 		comboBoxSort = new JComboBox<String>();
+		fillComboBoxSort();
 		comboBoxSort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
 				refresh();
+				
 			}
 		});
 		comboBoxSort.setFont(new Font("Tahoma", Font.PLAIN, 18));
@@ -513,11 +556,12 @@ public class Frame1 {
 		frame.getContentPane().add(lblSort);
 		
 		comboBoxDatabase = new JComboBox<String>();
+		fillComboBoxDatabase();
+		
 		comboBoxDatabase.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				connection = sqliteConnection.dbConnector((String) comboBoxDatabase.getSelectedItem());
 				refillList();
-				
 				refresh();
 			}
 		});
@@ -531,9 +575,8 @@ public class Frame1 {
 		lblDatabase.setBounds(773, 65, 119, 26);
 		frame.getContentPane().add(lblDatabase);
 		
-		fillComboBoxSort();
-		fillComboBoxDatabase();
 		taskList = new ArrayBag<>();
 		selectedIndex = -1;
+		refillList();
 	}
 }
