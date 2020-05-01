@@ -27,6 +27,7 @@ public class Frame1 {
 
 	//create bag array class here
 	public BagInterface<Task> taskList;
+	public Task clicked;
 	
 	private JFrame frame;
 	
@@ -376,14 +377,15 @@ public class Frame1 {
 					selectedIndex = table.getSelectedRow();
 					System.out.println("Row selected = " + selectedIndex);
 					
-					Task current = taskList.retrieve(selectedIndex-1);
+					clicked = taskList.retrieve(selectedIndex);
+					System.out.println("Selected task =" + clicked);
 					
-					textFieldName.setText(current.getName());
-					textFieldImportance.setText(Integer.toString(current.getImportance()));
-					textFieldCategory.setText(current.getCategory());
-					textFieldDueDateMonth.setText(toMonthString(current.getDueDateMonth()));
-					textFieldDueDateDay.setText(Integer.toString(current.getDueDateDay()));
-					textFieldDueDateYear.setText(Integer.toString(current.getDueDateYear()));
+					textFieldName.setText(clicked.getName());
+					textFieldImportance.setText(Integer.toString(clicked.getImportance()));
+					textFieldCategory.setText(clicked.getCategory());
+					textFieldDueDateMonth.setText(toMonthString(clicked.getDueDateMonth()));
+					textFieldDueDateDay.setText(Integer.toString(clicked.getDueDateDay()));
+					textFieldDueDateYear.setText(Integer.toString(clicked.getDueDateYear()));
 					
 				} catch (Exception ex)
 				{
