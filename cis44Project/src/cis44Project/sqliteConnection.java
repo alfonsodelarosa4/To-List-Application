@@ -25,7 +25,7 @@ public class sqliteConnection {
 		try {
 			String database_location = "jdbc:sqlite:C:\\Users\\Alfonso\\git\\cis44Project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
 			
-			/*
+			
 			switch(PC)
 			{
 			case "ALFONSO'S":
@@ -35,7 +35,7 @@ public class sqliteConnection {
 				database_location = "jdbc:sqlite:C:\\Users\\Ali Altimimi\\git\\cis44project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
 				break;
 			}
-			*/
+			
 			
 			
 			Class.forName("org.sqlite.JDBC");
