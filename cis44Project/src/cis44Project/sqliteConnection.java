@@ -35,9 +35,7 @@ public class sqliteConnection {
 				database_location = "jdbc:sqlite:C:\\Users\\Ali Altimimi\\git\\cis44project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
 				break;
 			}
-			
-			
-			
+						
 			Class.forName("org.sqlite.JDBC");
 			//download driver https://bitbucket.org/xerial/sqlite-jdbc/downloads/
 			//location of sqlite file database for project

@@ -13,9 +13,9 @@ public class Task implements Comparable<Task> {
 	private static String sortFactor = "name";
 	
 	private final int MAX_IMPORTANCE = 2;
-	
 	private final int MIN_IMPORTANCE = 0;
 	
+	//default constructor
 	public Task()
 	{
 		setName("");
@@ -24,6 +24,7 @@ public class Task implements Comparable<Task> {
 		setDueDateDay(0);
 	}
 	
+	//constructor
 	public Task(String name, int importance, String category, int month, int day, int year)
 	{
 		setName(name);
@@ -34,6 +35,8 @@ public class Task implements Comparable<Task> {
 		setImportance(importance);
 	}
 	
+	
+	//the following methods are setters and getters of the data members of the Task class
 	public void setSortFactor(String sort)
 	{
 		switch(sort)
@@ -144,7 +147,6 @@ public class Task implements Comparable<Task> {
 	}
 	
 	public int compareTo(Task obj)
-    //-ve this < obj; 0 this == obj; +ve this > onj
 	{
 		Task t = null;
 		try

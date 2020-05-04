@@ -77,7 +77,7 @@ public class Frame1 {
 		
 	}
 	
-	
+	// method that returns the string value of a month from the int parameter of the month
 	public String toMonthString (int month)
 	{
 		switch(month)
@@ -110,6 +110,7 @@ public class Frame1 {
 		return "January";
 	}
 	
+	// method that returns the int value of a month from the string parameter of the month
 	public int toMonthInt (String month)
 	{
 		switch(month)
@@ -142,6 +143,7 @@ public class Frame1 {
 		return 1;
 	}
 	
+	//sorts the bag array based on the item selected from the combo box sort
 	//FIX: when sorting algorithms are created
 	public void sortBagArray()
 	{
@@ -186,7 +188,7 @@ public class Frame1 {
 	}
 	*/
 	
-	
+	//adds a task object to the TaskList bag array
 	public void addTask(String name, int importance, String category, int month, int day, int year)
 	{
 				
@@ -196,6 +198,7 @@ public class Frame1 {
 		taskList.add(newTask);
 	}
 	
+	//removes a task object from the TaskList bag array
 	public void removeSelectedTask()
 	{
 		if(selectedIndex == -1)
@@ -209,6 +212,7 @@ public class Frame1 {
 		}
 	}
 	
+	//deletes elements from the GUI table
 	public void deleteTableElements()
 	{
 		try {
@@ -228,6 +232,7 @@ public class Frame1 {
 		}
 	}
 	
+	//copy elements from database to bag array
 	public void copyDatabaseToBagArray()
 	{
 		System.out.println("Contents of TaskList before refillList(): " + taskList);
@@ -273,6 +278,7 @@ public class Frame1 {
 		refresh();
 	}
 	
+	//copy elements from bag array to database
 	public void copyBagArrayToDatabase()
 	{
 		if(!taskList.isEmpty())
@@ -305,6 +311,7 @@ public class Frame1 {
 	}
 	
 	
+	//copy elements from database to GUI table
 	public void copyDatabaseToGUITable()
 	{
 		//copy elements from database to GUI table
@@ -325,21 +332,24 @@ public class Frame1 {
 		}
 	}
 	
+	//refresh calls several functions to update the bag array, database, and the GUI
 	public void refresh()
 	{
+		//sorts elements in bag array
 		sortBagArray();
+		
 		//delete contents of GUI table
-
 		deleteTableElements();		
 
-		//add elements from bag array to database
-				
+		//copy elements from bag array to database
 		copyBagArrayToDatabase();
 		
+		//copy elements from database to GUI table
 		copyDatabaseToGUITable();
 		System.out.println("Contents of TaskList after refresh(): " + taskList);
 	}
 	
+	// the following three methods fill the contents of the combo boxes in the GUI
 	public void fillComboBoxSort()
 	{
 		comboBoxSort.addItem("Sort by Name");
