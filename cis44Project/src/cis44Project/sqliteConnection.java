@@ -19,26 +19,17 @@ public class sqliteConnection {
 	
 	Connection conn = null;
 	
-	public static Connection dbConnector(String PC)
+	public static Connection dbConnector()
 	{
 		
 		try {
-			String database_location = "jdbc:sqlite:C:\\Users\\Alfonso\\git\\cis44Project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
+			//database_location is the location of the database in the user's computer
+			String database_location = "jdbc:sqlite:" + System.getProperty("user.dir") + "\\database files\\CIS44ProjectData.sqlite";
 			
-			
-			switch(PC)
-			{
-			case "ALFONSO'S":
-				database_location = "jdbc:sqlite:C:\\Users\\Alfonso\\git\\cis44Project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
-				break;
-			case "ALI'S":
-				database_location = "jdbc:sqlite:C:\\Users\\Ali Altimimi\\git\\cis44project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
-				break;
-			}
-						
 			Class.forName("org.sqlite.JDBC");
-			//download driver https://bitbucket.org/xerial/sqlite-jdbc/downloads/
-			//location of sqlite file database for project
+
+			
+			//establishes connection of Java program to SQLite database.
 			Connection conn = DriverManager.getConnection(database_location);
 			JOptionPane.showMessageDialog(null, "Connection Successful");
 			return conn;
@@ -49,3 +40,20 @@ public class sqliteConnection {
 		}
 	}
 }
+
+//download driver https://bitbucket.org/xerial/sqlite-jdbc/downloads/
+//location of sqlite file database for project
+
+/*
+switch(PC)
+{
+case "ALFONSO'S":
+	database_location = "jdbc:sqlite:C:\\Users\\Alfonso\\git\\cis44Project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
+	break;
+case "ALI'S":
+	database_location = "jdbc:sqlite:C:\\Users\\Ali Altimimi\\git\\cis44project\\cis44Project\\database files\\CIS44ProjectData.sqlite";
+	break;
+}
+*/
+
+//System.out.println(System.getProperty("user.dir"));

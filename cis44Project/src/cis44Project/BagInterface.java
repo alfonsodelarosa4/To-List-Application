@@ -4,9 +4,22 @@ package cis44Project;
 public interface BagInterface<T>
 {
 	/*
-	 * 
+	 * Retrieves object based on index passed
+	 * Parameter: desired index
+	 * Returns: object desired
 	 */
 	public T retrieve (int index);
+	
+	/*
+	 * Sorts list of objects with merge sort
+	 */
+	public void mergeSort();
+	
+	
+	/*
+	 * Sorts list of objects with quick sort
+	 */
+	public void quickSort();
 	
 	
 	/** Gets the current number of entries in this bag.

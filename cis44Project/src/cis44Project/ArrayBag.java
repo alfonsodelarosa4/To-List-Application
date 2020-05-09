@@ -221,6 +221,7 @@ public final class ArrayBag<T> implements BagInterface<T>
 		System.out.println();
 	}
 	
+	//returns the element based on the int index in the parameter
 	public T retrieve(int index)
 	{
 		if(this.isEmpty())
@@ -249,6 +250,19 @@ public final class ArrayBag<T> implements BagInterface<T>
 		}
 		str += "]";
 		return str;
+	}
+	
+	
+	//merge sort
+	public void mergeSort()
+	{
+		
+	}
+	
+	//quick sort
+	public void quickSort()
+	{
+		
 	}
 	
 	

@@ -1,9 +1,7 @@
 package cis44Project;
 
 public class Task implements Comparable<Task> {
-	// 
-	
-	
+
 	private String name;
 	private String category;
 	private int month;
@@ -24,7 +22,7 @@ public class Task implements Comparable<Task> {
 		setDueDateDay(0);
 	}
 	
-	//constructor
+	//parameterized constructor
 	public Task(String name, int importance, String category, int month, int day, int year)
 	{
 		setName(name);
@@ -37,6 +35,8 @@ public class Task implements Comparable<Task> {
 	
 	
 	//the following methods are setters and getters of the data members of the Task class
+	
+	//setter and getter methods for sortFactor
 	public void setSortFactor(String sort)
 	{
 		switch(sort)
@@ -71,6 +71,12 @@ public class Task implements Comparable<Task> {
 		}
 	}
 	
+	public String getSortFactor()
+	{
+		return sortFactor;
+	}
+	
+	//setter and getter methods for the other data members
 	public void setName(String name)
 	{
 		this.name = name;
@@ -146,6 +152,8 @@ public class Task implements Comparable<Task> {
 		return importance;
 	}
 	
+	//compareTo method that returns whether the object is 
+	//greater than (1), less than (-1), or equal to (0) the object parameter
 	public int compareTo(Task obj)
 	{
 		Task t = null;
@@ -181,10 +189,10 @@ public class Task implements Comparable<Task> {
 			
 		default:
 			return name.compareTo(t.name);
-		}
-		
+		}	
 	}
 	
+	//toString() method
 	public String toString()
 	{
 		return "Task " + name +" of importance " + importance + " in category " + category + " is due " + month + " " + day +", " + year;

@@ -1,5 +1,9 @@
 package cis44Project;
 
+import java.awt.*;
+
+import javax.swing.*;
+import javax.swing.table.*;
 import java.awt.EventQueue;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +27,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+
 import java.awt.Color;
 
 import java.util.*;
@@ -31,18 +37,36 @@ import java.time.*;
 
 
 public class Frame1 {
-
-	//create bag array class here
-	public BagInterface<Task> taskList;
-	public Task clicked;
+	//bag array that stores the tasks	
+	private BagInterface<Task> taskList;
 	
+	//index of selected task that was clicked on at the GUI table 
+	//in the taskList bag array
+	private int selectedIndex;
+	
+	//the task object in the selectedIndex of the task list bag array 
+	private Task clicked;
+	
+	//frame of the GUI
 	private JFrame frmTaskManager;
 	
+	//combo box for the sort algorithms
 	private JComboBox<String> comboBoxSort;
-	private JComboBox<String> comboBoxDatabase;
+	
+	//combo box for the user to access pre-made date values
 	private JComboBox<String> comboBoxDueDate;
 	
-	private int selectedIndex;
+	//connection of the java program to an sqlite database
+	Connection connection = null;
+	
+	//elements of the GUI of the program
+	private JTextField textFieldName;
+	private JTextField textFieldImportance;
+	private JTextField textFieldCategory;
+	private JTextField textFieldDueDateMonth;
+	private JTextField textFieldDueDateDay;
+	private JTextField textFieldDueDateYear;
+	private JTable table;
 
 	/**
 	 * Launch the application.
@@ -58,23 +82,221 @@ public class Frame1 {
 				}
 			}
 		});
-	}
-	Connection connection = null;
-	private JTextField textFieldName;
-	private JTextField textFieldImportance;
-	private JTextField textFieldCategory;
-	private JTextField textFieldDueDateMonth;
-	private JTextField textFieldDueDateDay;
-	private JTextField textFieldDueDateYear;
-	private JTable table;
-	
+	}	
 	
 	/**
 	 * Create the application.
 	 */
 	public Frame1() {
 		initialize();
+	}
+	
+	//sorts the bag array based on the item selected from the combo box sort
+	//FIX: when sorting algorithms are created
+	public void sortBagArray()
+	{
+		switch((String) comboBoxSort.getSelectedItem())
+		{
+		case "Sort by Name":
+			//sort name algorithm
+			break;
+		case "Sort by Due Date":
+			//sort due date algorithm
+			break;
+		case "Sort by Category":
+			//sort category algorithm
+			break;
+		case "Sort by Importance":
+			//sort importance algorithm
+			break;
+		default : //sort by Name
+			
+			break;
+		}
+	}
+	
+	//adds a task object to the TaskList bag array
+	public void addTask(String name, int importance, String category, int month, int day, int year)
+	{	
+		Task newTask = new Task(name,importance, category, month, day, year);
+		//add element with a default constructor
+		taskList.add(newTask);
+	}
+	
+	//removes a task object from the TaskList bag array
+	public void removeSelectedTask()
+	{
+		if(selectedIndex == -1)
+		{
+			//when no task is selected
+			JOptionPane.showMessageDialog(null, "No index was selected");
+		}
+		else
+		{
+			//when a task is selected
+			taskList.removeEntry(selectedIndex);
+		}
+	}
+	
+	//deletes elements from the table in the database to be refilled by TaskList bag array
+	public void deleteTableElements()
+	{
+		try {
+			//To perform an action to the database,
+			//a query needs to be executed
+			
+			//Query is created
+			String query;
+			PreparedStatement pst;
+			query = "delete from TaskTable";
+			
+			//Query is prepared
+			pst = connection.prepareStatement(query);
+			
+			//Query is executed
+			pst.execute();
+						
+			//Query is closed.
+			pst.close();
+			
+		} catch (Exception eb)
+		{
+			eb.printStackTrace();
+		}
+	}
+	
+	//copy elements from database to bag array
+	public void copyDatabaseToBagArray()
+	{
+		System.out.println("Contents of TaskList before refillList(): " + taskList);
+		try {
+           
+			//empty elements from TaskList bag array
+			while(!taskList.isEmpty())
+            	taskList.remove();
+			
+			//create query to copy elements from database to bag array
+			String query = "select * from TaskTable";
+			PreparedStatement pst = connection.prepareStatement(query);
+			
+			//execute query to retrieve the values of all elements from bag array
+			ResultSet rs = pst.executeQuery();
+			
+			while(rs.next())
+			{
+				//tasks are added to bag array 
+				//with the values of elements from the database
+				addTask(rs.getString("Name"),Integer.parseInt(rs.getString("Importance")),rs.getString("Category"),toMonthInt(rs.getString("MonthDue")),Integer.parseInt(rs.getString("DayDue")),Integer.parseInt(rs.getString("YearDue")));
+			}
+			
+			pst.close();
+			
+		} catch (Exception ea)
+		{
+			ea.printStackTrace();
+		}
 		
+		System.out.println("Contents of TaskList after refillList(): " + taskList);
+		refresh();
+	}
+	
+	//copy elements from bag array to database
+	public void copyBagArrayToDatabase()
+	{
+		//each element is added in this for-loop
+		if(!taskList.isEmpty())
+		{
+			for(int i = 1; i <= taskList.getCurrentSize(); i++)
+			{
+				try {
+					//Query to add an element to table in database is prepared
+					String query = "insert into TaskTable (Name, Importance, Category, MonthDue, DayDue, YearDue) values (?, ?, ?, ?, ?, ?)";
+					PreparedStatement pst = connection.prepareStatement(query);
+					
+					//retrieve an element from TaskList bag array
+					Task current = taskList.retrieve(i-1);
+					
+					//set data members of element to be added
+					pst.setString(1, current.getName() );
+					pst.setInt(2, current.getImportance() );
+					pst.setString(3, current.getCategory() );
+					pst.setString(4, toMonthString(current.getDueDateMonth() ));
+					pst.setInt(5, current.getDueDateDay() );
+					pst.setInt(6, current.getDueDateYear() );
+					
+					//execute query to add element
+					pst.execute();
+					pst.close();
+					
+				} catch (Exception ec)
+				{	
+					ec.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	
+	//copy elements from database to GUI table
+	public void copyDatabaseToGUITable()
+	{
+		try {
+			//create query to retrieve values from all elements from table of database
+			String query = "select * from TaskTable";
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery();
+			
+			//copy elements received from table of database to GUI table
+			table.setModel(DbUtils.resultSetToTableModel(rs));
+			
+			//close connections
+			rs.close();
+			pst.close();
+			
+		} catch (Exception ef)
+		{
+			ef.printStackTrace();
+		}
+	}
+	
+	//refresh calls several functions to update the bag array, database, and the GUI
+	public void refresh()
+	{
+		//sorts elements in bag array
+		sortBagArray();
+		
+		//delete contents of GUI table
+		deleteTableElements();		
+
+		//copy elements from bag array to database
+		copyBagArrayToDatabase();
+		
+		//copy elements from database to GUI table
+		copyDatabaseToGUITable();
+		
+		//displays contents of bag
+		System.out.println("Contents of TaskList after refresh(): " + taskList);
+	}
+	
+	// fills the combo box sort with these labels
+	public void fillComboBoxSort()
+	{
+		comboBoxSort.addItem("Sort by Name");
+		comboBoxSort.addItem("Sort by Due Date");
+		comboBoxSort.addItem("Sort by Category");
+		comboBoxSort.addItem("Sort by Importance");
+	}
+	
+	// fills the combo box due date with these labels
+	public void fillComboBoxDueDate()
+	{
+		comboBoxDueDate.addItem("Today");
+		comboBoxDueDate.addItem("Tomorrow");
+		comboBoxDueDate.addItem("2 Days Later");
+		comboBoxDueDate.addItem("3 Days Later");
+		comboBoxDueDate.addItem("Next Week");
+		comboBoxDueDate.addItem("Next Month");
+		comboBoxDueDate.addItem("Next Year");
 	}
 	
 	// method that returns the string value of a month from the int parameter of the month
@@ -143,245 +365,12 @@ public class Frame1 {
 		return 1;
 	}
 	
-	//sorts the bag array based on the item selected from the combo box sort
-	//FIX: when sorting algorithms are created
-	public void sortBagArray()
-	{
-		switch((String) comboBoxSort.getSelectedItem())
-		{
-		case "Sort by Name":
-			//sort name algorithm
-			break;
-		case "Sort by Due Date":
-			//sort due date algorithm
-			break;
-		case "Sort by Category":
-			//sort category algorithm
-			break;
-		case "Sort by Importance":
-			//sort importance algorithm
-			break;
-		default : //sort by Name
-			
-			break;
-		}
-	}
-	
-	/*
-	public void refreshTable()
-	{
-		try {
-			//replacing * with 'columnName1' or even 'columnName2,columnName3'
-			//* selects all of the columns
-			String query = "select * from TaskTable";
-			
-			PreparedStatement pst = connection.prepareStatement(query);
-			ResultSet rs = pst.executeQuery();
-			
-			rs.close();
-			pst.close();
-			
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-	*/
-	
-	//adds a task object to the TaskList bag array
-	public void addTask(String name, int importance, String category, int month, int day, int year)
-	{
-				
-		Task newTask = new Task(name,importance, category, month, day, year);
-		
-		//add element with a default constructor
-		taskList.add(newTask);
-	}
-	
-	//removes a task object from the TaskList bag array
-	public void removeSelectedTask()
-	{
-		if(selectedIndex == -1)
-		{
-		
-		JOptionPane.showMessageDialog(null, "No index was selected");
-		}
-		else
-		{
-			taskList.removeEntry(selectedIndex);
-		}
-	}
-	
-	//deletes elements from the GUI table
-	public void deleteTableElements()
-	{
-		try {
-			String query;
-			PreparedStatement pst;
-			query = "delete from TaskTable";
-			
-			pst = connection.prepareStatement(query);
-			
-			pst.execute();
-						
-			pst.close();
-			
-		} catch (Exception eb)
-		{
-			eb.printStackTrace();
-		}
-	}
-	
-	//copy elements from database to bag array
-	public void copyDatabaseToBagArray()
-	{
-		System.out.println("Contents of TaskList before refillList(): " + taskList);
-		try {
-			//count number of entries from table
-			/*
-			 
-			
-			String query = "SELECT COUNT(*) FROM TaskTable";
-			PreparedStatement pst = connection.prepareStatement(query);
-					
-			ResultSet rs = pst.executeQuery();
-			
-            while (rs.next()){
-                tableEntries = rs.getInt(1);
-            }
-            */
-           
-			//empty bag array
-			while(!taskList.isEmpty())
-            	taskList.remove();
-			
-			//copy elements from database to bag array
-			String query = "select * from TaskTable";
-			PreparedStatement pst = connection.prepareStatement(query);
-			
-			ResultSet rs = pst.executeQuery();
-			
-			while(rs.next())
-			{
-					//addTask(String name, int importance, String catergory, int month, int day, int year)
-				addTask(rs.getString("Name"),Integer.parseInt(rs.getString("Importance")),rs.getString("Category"),toMonthInt(rs.getString("MonthDue")),Integer.parseInt(rs.getString("DayDue")),Integer.parseInt(rs.getString("YearDue")));
-			}
-			
-			pst.close();
-			
-		} catch (Exception ea)
-		{
-			ea.printStackTrace();
-		}
-		
-		System.out.println("Contents of TaskList after refillList(): " + taskList);
-		refresh();
-	}
-	
-	//copy elements from bag array to database
-	public void copyBagArrayToDatabase()
-	{
-		if(!taskList.isEmpty())
-		{
-			for(int i = 1; i <= taskList.getCurrentSize(); i++)
-			{
-				
-				try {
-					String query = "insert into TaskTable (Name, Importance, Category, MonthDue, DayDue, YearDue) values (?, ?, ?, ?, ?, ?)";
-				
-				PreparedStatement pst = connection.prepareStatement(query);
-				
-				Task current = taskList.retrieve(i-1);
-				
-				pst.setString(1, current.getName() );
-				pst.setInt(2, current.getImportance() );
-				pst.setString(3, current.getCategory() );
-				pst.setString(4, toMonthString(current.getDueDateMonth() ));
-				pst.setInt(5, current.getDueDateDay() );
-				pst.setInt(6, current.getDueDateYear() );
-			
-				pst.execute();
-				pst.close();
-				} catch (Exception ec)
-				{	
-					ec.printStackTrace();
-				}
-			}
-		}
-	}
-	
-	
-	//copy elements from database to GUI table
-	public void copyDatabaseToGUITable()
-	{
-		//copy elements from database to GUI table
-		try {
-			String query = "select * from TaskTable";
-			
-			PreparedStatement pst = connection.prepareStatement(query);
-			ResultSet rs = pst.executeQuery();
-			
-			table.setModel(DbUtils.resultSetToTableModel(rs));
-			
-			rs.close();
-			pst.close();
-			
-		} catch (Exception ef)
-		{
-			ef.printStackTrace();
-		}
-	}
-	
-	//refresh calls several functions to update the bag array, database, and the GUI
-	public void refresh()
-	{
-		//sorts elements in bag array
-		sortBagArray();
-		
-		//delete contents of GUI table
-		deleteTableElements();		
-
-		//copy elements from bag array to database
-		copyBagArrayToDatabase();
-		
-		//copy elements from database to GUI table
-		copyDatabaseToGUITable();
-		System.out.println("Contents of TaskList after refresh(): " + taskList);
-	}
-	
-	// the following three methods fill the contents of the combo boxes in the GUI
-	public void fillComboBoxSort()
-	{
-		comboBoxSort.addItem("Sort by Name");
-		comboBoxSort.addItem("Sort by Due Date");
-		comboBoxSort.addItem("Sort by Category");
-		comboBoxSort.addItem("Sort by Importance");
-	}
-	
-	
-	public void fillComboBoxDatabase()
-	{
-		comboBoxDatabase.addItem("ALFONSO'S");
-		comboBoxDatabase.addItem("ALI'S");
-	}
-	
-	public void fillComboBoxDueDate()
-	{
-		comboBoxDueDate.addItem("Today");
-		comboBoxDueDate.addItem("Tomorrow");
-		comboBoxDueDate.addItem("2 Days Later");
-		comboBoxDueDate.addItem("3 Days Later");
-		comboBoxDueDate.addItem("Next Week");
-		comboBoxDueDate.addItem("Next Month");
-		comboBoxDueDate.addItem("Next Year");
-	}
-
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		//need this to connect to database
-		connection = sqliteConnection.dbConnector("ALFONSO'S");
+		//connects java program to the sqlite database
+		connection = sqliteConnection.dbConnector();
 		
 		frmTaskManager = new JFrame();
 		frmTaskManager.getContentPane().setBackground(new Color(0, 102, 153));
@@ -446,9 +435,11 @@ public class Frame1 {
 		
 		JButton btnAddTask = new JButton("Add Task");
 		btnAddTask.setBackground(Color.WHITE);
+		//event listener of "Add Task" button
 		btnAddTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
+				//retrieves values from textfields on GUI
 				String name = textFieldName.getText();
 				int importance = Integer.parseInt(textFieldImportance.getText());
 				String category = textFieldCategory.getText();
@@ -456,10 +447,11 @@ public class Frame1 {
 				int day = Integer.parseInt(textFieldDueDateDay.getText());
 				int year = Integer.parseInt(textFieldDueDateYear.getText());
 				
+				//adds a task with the values from the textfields of the GUI
 				addTask(name, importance, category, month, day, year);
 				
+				//refreshes table of GUI
 				refresh();
-				
 			}
 		});
 		btnAddTask.setFont(new Font("Segoe UI", Font.BOLD, 18));
@@ -468,14 +460,16 @@ public class Frame1 {
 		
 		JButton btnRemoveTask = new JButton("Remove Task");
 		btnRemoveTask.setBackground(Color.WHITE);
+		//add event listener to "Remove Task"  button
 		btnRemoveTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//remove task
 				removeSelectedTask();
+				
+				//refresh GUI Table
 				refresh();
 				
 				//change text fields
-		
 				textFieldName.setText("");
 				textFieldImportance.setText("");
 				textFieldCategory.setText("");
@@ -488,15 +482,18 @@ public class Frame1 {
 		btnRemoveTask.setBounds(37, 597, 165, 34);
 		frmTaskManager.getContentPane().add(btnRemoveTask);
 		
+		//event listener of "Update Task" button
 		JButton btnUpdateTask = new JButton("Update Task");
 		btnUpdateTask.setBackground(Color.WHITE);
 		btnUpdateTask.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				//remove selected task
 				removeSelectedTask();
+				
+				//refresh table of GUI
 				refresh();
 				
-				//add new task
+				//retrieves values from textfields on GUI
 				String name = textFieldName.getText();
 				int importance = Integer.parseInt(textFieldImportance.getText());
 				String category = textFieldCategory.getText();
@@ -504,7 +501,10 @@ public class Frame1 {
 				int day = Integer.parseInt(textFieldDueDateDay.getText());
 				int year = Integer.parseInt(textFieldDueDateYear.getText());
 				
+				//adds a task with the values from the textfields of the GUI
 				addTask(name, importance, category, month, day, year);
+				
+				//refreshes table of GUI
 				refresh();
 			}
 		});
@@ -515,7 +515,7 @@ public class Frame1 {
 		JLabel lblNames = new JLabel("by Ali Altimimi and Alfonso De La Rosa");
 		lblNames.setForeground(new Color(255, 255, 255));
 		lblNames.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		lblNames.setBounds(10, 46, 360, 37);
+		lblNames.setBounds(10, 38, 360, 37);
 		frmTaskManager.getContentPane().add(lblNames);
 		
 		JLabel lblTaskEditor = new JLabel("Task Editor");
@@ -532,6 +532,8 @@ public class Frame1 {
 		
 		comboBoxSort = new JComboBox<String>();
 		fillComboBoxSort();
+		//the event listener method of sort combo box pressed
+
 		comboBoxSort.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				
@@ -573,28 +575,6 @@ public class Frame1 {
 		lblSort.setBounds(403, 65, 119, 26);
 		frmTaskManager.getContentPane().add(lblSort);
 		
-		comboBoxDatabase = new JComboBox<String>();
-		fillComboBoxDatabase();
-		
-		comboBoxDatabase.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				deleteTableElements();
-				connection = sqliteConnection.dbConnector((String) comboBoxDatabase.getSelectedItem());
-				copyDatabaseToBagArray();
-				refresh();
-			}
-		});
-		
-		comboBoxDatabase.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		comboBoxDatabase.setBounds(716, 93, 184, 26);
-		frmTaskManager.getContentPane().add(comboBoxDatabase);
-		
-		JLabel lblDatabase = new JLabel("Database");
-		lblDatabase.setForeground(new Color(255, 255, 255));
-		lblDatabase.setFont(new Font("Segoe UI", Font.BOLD, 16));
-		lblDatabase.setBounds(716, 65, 119, 26);
-		frmTaskManager.getContentPane().add(lblDatabase);
-		
 		JLabel lblDueDateOf = new JLabel("Due Date of Task");
 		lblDueDateOf.setForeground(new Color(255, 255, 255));
 		lblDueDateOf.setFont(new Font("Segoe UI", Font.BOLD | Font.ITALIC, 16));
@@ -612,7 +592,7 @@ public class Frame1 {
 		comboBoxDueDate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				LocalDate dueDate = LocalDate.now();
-				System.out.println((String) comboBoxDueDate.getSelectedItem());
+				//System.out.println((String) comboBoxDueDate.getSelectedItem());
 				
 				switch((String) comboBoxDueDate.getSelectedItem())
 				{
@@ -645,7 +625,6 @@ public class Frame1 {
 				textFieldDueDateMonth.setText(toMonthString(dueDate.getMonthValue()));
 				textFieldDueDateDay.setText(Integer.toString(dueDate.getDayOfMonth()));
 				textFieldDueDateYear.setText(Integer.toString(dueDate.getYear()));
-				
 			}
 		});
 		comboBoxDueDate.setBounds(10, 351, 221, 32);
@@ -686,7 +665,6 @@ public class Frame1 {
 		taskList = new ArrayBag<>();
 		selectedIndex = -1;
 		copyDatabaseToBagArray();
-		
-		
+		refresh();
 	}
 }
