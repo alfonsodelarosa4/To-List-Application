@@ -92,25 +92,34 @@ public class Frame1 {
 	}
 	
 	//sorts the bag array based on the item selected from the combo box sort
-	//FIX: when sorting algorithms are created
 	public void sortBagArray()
 	{
 		switch((String) comboBoxSort.getSelectedItem())
 		{
 		case "Sort by Name":
 			//sort name algorithm
+			Task.setSortFactor("name");
+			taskList.quickSort();
 			break;
 		case "Sort by Due Date":
 			//sort due date algorithm
+			Task.setSortFactor("date");
+			taskList.quickSort();
+			
 			break;
 		case "Sort by Category":
 			//sort category algorithm
+			Task.setSortFactor("category");
+			taskList.quickSort();
 			break;
 		case "Sort by Importance":
 			//sort importance algorithm
+			Task.setSortFactor("importance");
+			taskList.quickSort();
 			break;
 		default : //sort by Name
-			
+			Task.setSortFactor("name");
+			taskList.quickSort();
 			break;
 		}
 	}
@@ -375,7 +384,7 @@ public class Frame1 {
 		frmTaskManager = new JFrame();
 		frmTaskManager.getContentPane().setBackground(new Color(0, 102, 153));
 		frmTaskManager.setTitle("Task Manager");
-		frmTaskManager.setBounds(100, 100, 921, 691);
+		frmTaskManager.setBounds(100, 100, 876, 706);
 		frmTaskManager.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frmTaskManager.getContentPane().setLayout(null);
 		
@@ -455,7 +464,7 @@ public class Frame1 {
 			}
 		});
 		btnAddTask.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		btnAddTask.setBounds(37, 509, 165, 34);
+		btnAddTask.setBounds(36, 520, 165, 34);
 		frmTaskManager.getContentPane().add(btnAddTask);
 		
 		JButton btnRemoveTask = new JButton("Remove Task");
@@ -479,7 +488,7 @@ public class Frame1 {
 			}
 		});
 		btnRemoveTask.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		btnRemoveTask.setBounds(37, 597, 165, 34);
+		btnRemoveTask.setBounds(36, 608, 165, 34);
 		frmTaskManager.getContentPane().add(btnRemoveTask);
 		
 		//event listener of "Update Task" button
@@ -509,7 +518,7 @@ public class Frame1 {
 			}
 		});
 		btnUpdateTask.setFont(new Font("Segoe UI", Font.BOLD, 18));
-		btnUpdateTask.setBounds(37, 553, 165, 34);
+		btnUpdateTask.setBounds(36, 564, 165, 34);
 		frmTaskManager.getContentPane().add(btnUpdateTask);
 		
 		JLabel lblNames = new JLabel("by Ali Altimimi and Alfonso De La Rosa");
@@ -582,7 +591,7 @@ public class Frame1 {
 		frmTaskManager.getContentPane().add(lblDueDateOf);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(260, 133, 640, 509);
+		scrollPane.setBounds(248, 133, 584, 504);
 		frmTaskManager.getContentPane().add(scrollPane);
 		
 		table = new JTable();

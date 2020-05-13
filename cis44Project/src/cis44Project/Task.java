@@ -1,4 +1,5 @@
 package cis44Project;
+import java.lang.Integer;
 
 public class Task implements Comparable<Task> {
 
@@ -37,7 +38,7 @@ public class Task implements Comparable<Task> {
 	//the following methods are setters and getters of the data members of the Task class
 	
 	//setter and getter methods for sortFactor
-	public void setSortFactor(String sort)
+	public static void setSortFactor(String sort)
 	{
 		switch(sort)
 		{
@@ -49,15 +50,7 @@ public class Task implements Comparable<Task> {
 			sortFactor = sort;
 		break;
 		
-		case "month":
-			sortFactor = sort;
-		break;
-		
-		case "day":
-			sortFactor = sort;
-		break;
-		
-		case "year":
+		case "date":
 			sortFactor = sort;
 		break;
 		
@@ -175,14 +168,11 @@ public class Task implements Comparable<Task> {
 		case "category":
 			return category.compareTo(t.category);
 		
-		case "month":
-			return Integer.compare(month, t.month);
-		
-		case "day":
-			return Integer.compare(day, t.day);
-		
-		case "year":
-			return Integer.compare(year, t.year);
+		case "date":
+			int thisDate = day + 100 * month + 10000 * year;
+			int otherDate = t.day + 100 * t.month + 10000 * t.year;
+			
+			return Integer.compare(thisDate, otherDate);
 		
 		case "importance":
 			return Integer.compare(importance, t.importance);
