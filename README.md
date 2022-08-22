@@ -13,10 +13,10 @@ The Task Manager project is a todo list program.
 
 ## Features
 - User can add tasks to database (this demo has an intentional error which is corrected in the update gif)
-!()[https://github.com/alfonsodelarosa4/To-List-Application/blob/master/demo_gifs/create.gif]
+![](https://github.com/alfonsodelarosa4/To-List-Application/blob/master/demo_gifs/create.gif)
 - User can update tasks to database
-!()[https://github.com/alfonsodelarosa4/To-List-Application/blob/master/demo_gifs/remove.gif]
+![](https://github.com/alfonsodelarosa4/To-List-Application/blob/master/demo_gifs/remove.gif)
 - User can delete tasks from database
-!()[https://github.com/alfonsodelarosa4/To-List-Application/blob/master/demo_gifs/sort.gif]
+![](https://github.com/alfonsodelarosa4/To-List-Application/blob/master/demo_gifs/sort.gif)
 - User can sort tasks by certain fields
-!()[https://github.com/alfonsodelarosa4/To-List-Application/blob/master/demo_gifs/update.gif]
+![](https://github.com/alfonsodelarosa4/To-List-Application/blob/master/demo_gifs/update.gif)
